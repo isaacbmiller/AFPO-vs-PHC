@@ -38,7 +38,6 @@ class ROBOT:
                 jointName = self.nn.Get_Motor_Neurons_Joint(neuronName)
                 desiredAngle = self.nn.Get_Value_Of(neuronName)
                 encoded_joint_name = jointName.encode('utf-8')
-                print("Joint: ", jointName, " Angle: ", desiredAngle)
                 self.motors[encoded_joint_name].Set_Value(desiredAngle)
 
     def Save_Values(self):

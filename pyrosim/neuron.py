@@ -81,7 +81,6 @@ class NEURON:
 
     def Allow_Presynaptic_Neuron_To_Influence_Me(self, neuron, synapse):
         self.Add_To_Value(neuron.Get_Value() * synapse.Get_Weight())
-        print(neuron.Get_Value(), " ", synapse.Get_Weight())
 
 
 # -------------------------- Private methods -------------------------
