@@ -30,7 +30,7 @@ class ROBOT:
 
     def Think(self):
         self.nn.Update()
-        # self.nn.Print()
+        self.nn.Print()
 
     def Act(self, timeStep):
         for neuronName in self.nn.neurons.keys():
