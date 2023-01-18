@@ -30,7 +30,7 @@ class ROBOT:
 
     def Think(self):
         self.nn.Update()
-        self.nn.Print()
+        # self.nn.Print()
 
     def Act(self, timeStep):
         for neuronName in self.nn.neurons.keys():
@@ -39,6 +39,16 @@ class ROBOT:
                 desiredAngle = self.nn.Get_Value_Of(neuronName)
                 encoded_joint_name = jointName.encode('utf-8')
                 self.motors[encoded_joint_name].Set_Value(desiredAngle)
+
+    def Get_Fitness(self):
+        stateOfLinkZero = p.getLinkState(self.robotId, 0)
+        positionOfLinkZero = stateOfLinkZero[0]
+        x = positionOfLinkZero[0]
+        # Write it to fitness.txt
+        f = open("fitness.txt", "w")
+        f.write(str(x))
+        f.close()
+        exit()
 
     def Save_Values(self):
         if self.saveValues:
