@@ -2,27 +2,28 @@ import pybullet as p
 
 from pyrosim.nndf import NNDF
 
-from pyrosim.linksdf  import LINK_SDF
+from pyrosim.linksdf import LINK_SDF
 
 from pyrosim.linkurdf import LINK_URDF
 
 from pyrosim.model import MODEL
 
-from pyrosim.sdf   import SDF
+from pyrosim.sdf import SDF
 
-from pyrosim.urdf  import URDF
+from pyrosim.urdf import URDF
 
 from pyrosim.joint import JOINT
 
-SDF_FILETYPE  = 0
+SDF_FILETYPE = 0
 
 URDF_FILETYPE = 1
 
-NNDF_FILETYPE   = 2
+NNDF_FILETYPE = 2
 
 # global availableLinkIndex
 
 # global linkNamesToIndices
+
 
 def End():
 
@@ -38,9 +39,11 @@ def End():
 
     f.close()
 
+
 def End_Model():
 
     model.Save_End_Tag(f)
+
 
 def Get_Touch_Sensor_Value_For_Link(linkName):
 
@@ -54,11 +57,12 @@ def Get_Touch_Sensor_Value_For_Link(linkName):
 
         linkIndex = pt[4]
 
-        if ( linkIndex == desiredLinkIndex ):
+        if (linkIndex == desiredLinkIndex):
 
             touchValue = 1.0
 
     return touchValue
+
 
 def Prepare_Link_Dictionary(bodyID):
 
@@ -66,9 +70,9 @@ def Prepare_Link_Dictionary(bodyID):
 
     linkNamesToIndices = {}
 
-    for jointIndex in range( 0 , p.getNumJoints(bodyID) ):
+    for jointIndex in range(0, p.getNumJoints(bodyID)):
 
-        jointInfo = p.getJointInfo( bodyID , jointIndex )
+        jointInfo = p.getJointInfo(bodyID, jointIndex)
 
         jointName = jointInfo[1]
 
@@ -80,11 +84,12 @@ def Prepare_Link_Dictionary(bodyID):
 
         linkNamesToIndices[linkName] = jointIndex
 
-        if jointIndex==0:
+        if jointIndex == 0:
 
-           rootLinkName = jointName[0]
+            rootLinkName = jointName[0]
 
-           linkNamesToIndices[rootLinkName] = -1 
+            linkNamesToIndices[rootLinkName] = -1
+
 
 def Prepare_Joint_Dictionary(bodyID):
 
@@ -92,13 +97,14 @@ def Prepare_Joint_Dictionary(bodyID):
 
     jointNamesToIndices = {}
 
-    for jointIndex in range( 0 , p.getNumJoints(bodyID) ):
+    for jointIndex in range(0, p.getNumJoints(bodyID)):
 
-        jointInfo = p.getJointInfo( bodyID , jointIndex )
+        jointInfo = p.getJointInfo(bodyID, jointIndex)
 
         jointName = jointInfo[1]
 
         jointNamesToIndices[jointName] = jointIndex
+
 
 def Prepare_To_Simulate(bodyID):
 
@@ -106,7 +112,8 @@ def Prepare_To_Simulate(bodyID):
 
     Prepare_Joint_Dictionary(bodyID)
 
-def Send_Cube(name="default",pos=[0,0,0],size=[1,1,1]):
+
+def Send_Cube(name="default", pos=[0, 0, 0], size=[1, 1, 1]):
 
     global availableLinkIndex
 
@@ -114,13 +121,13 @@ def Send_Cube(name="default",pos=[0,0,0],size=[1,1,1]):
 
     if filetype == SDF_FILETYPE:
 
-        Start_Model(name,pos)
+        Start_Model(name, pos)
 
-        link = LINK_SDF(name,pos,size)
+        link = LINK_SDF(name, pos, size)
 
         links.append(link)
     else:
-        link = LINK_URDF(name,pos,size)
+        link = LINK_URDF(name, pos, size)
 
         links.append(link)
 
@@ -134,38 +141,46 @@ def Send_Cube(name="default",pos=[0,0,0],size=[1,1,1]):
 
     availableLinkIndex = availableLinkIndex + 1
 
-def Send_Joint(name,parent,child,type,position):
 
-    joint = JOINT(name,parent,child,type,position)
+def Send_Joint(name, parent, child, type, position, jointAxis="0 1 0"):
 
-    joint.Save(f)
+    joint = JOINT(name, parent, child, type, position)
 
-def Send_Motor_Neuron(name,jointName):
+    joint.Save(f, jointAxis)
 
-    f.write('    <neuron name = "' + str(name) + '" type = "motor"  jointName = "' + jointName + '" />\n')
 
-def Send_Sensor_Neuron(name,linkName):
+def Send_Motor_Neuron(name, jointName):
 
-    f.write('    <neuron name = "' + str(name) + '" type = "sensor" linkName = "' + linkName + '" />\n')
+    f.write('    <neuron name = "' + str(name) +
+            '" type = "motor"  jointName = "' + jointName + '" />\n')
 
-def Send_Synapse( sourceNeuronName , targetNeuronName , weight ):
 
-    f.write('    <synapse sourceNeuronName = "' + str(sourceNeuronName) + '" targetNeuronName = "' + str(targetNeuronName) + '" weight = "' + str(weight) + '" />\n')
+def Send_Sensor_Neuron(name, linkName):
 
- 
-def Set_Motor_For_Joint(bodyIndex,jointName,controlMode,targetPosition,maxForce):
+    f.write('    <neuron name = "' + str(name) +
+            '" type = "sensor" linkName = "' + linkName + '" />\n')
+
+
+def Send_Synapse(sourceNeuronName, targetNeuronName, weight):
+
+    f.write('    <synapse sourceNeuronName = "' + str(sourceNeuronName) +
+            '" targetNeuronName = "' + str(targetNeuronName) + '" weight = "' + str(weight) + '" />\n')
+
+
+def Set_Motor_For_Joint(bodyIndex, jointName, controlMode, targetPosition, maxForce):
 
     p.setJointMotorControl2(
 
-        bodyIndex      = bodyIndex,
+        bodyIndex=bodyIndex,
 
-        jointIndex     = jointNamesToIndices[jointName],
+        jointIndex=jointNamesToIndices[jointName],
 
-        controlMode    = controlMode,
+        controlMode=controlMode,
 
-        targetPosition = targetPosition,
+        targetPosition=targetPosition,
 
-        force          = maxForce)
+        force=maxForce)
+
 
 def Start_NeuralNetwork(filename):
 
@@ -175,13 +190,14 @@ def Start_NeuralNetwork(filename):
 
     global f
 
-    f = open(filename,"w")
+    f = open(filename, "w")
 
     global nndf
 
     nndf = NNDF()
 
     nndf.Save_Start_Tag(f)
+
 
 def Start_SDF(filename):
 
@@ -198,8 +214,8 @@ def Start_SDF(filename):
     filetype = SDF_FILETYPE
 
     global f
- 
-    f = open(filename,"w")
+
+    f = open(filename, "w")
 
     global sdf
 
@@ -210,6 +226,7 @@ def Start_SDF(filename):
     global links
 
     links = []
+
 
 def Start_URDF(filename):
 
@@ -227,9 +244,9 @@ def Start_URDF(filename):
 
     global f
 
-    f = open(filename,"w")
+    f = open(filename, "w")
 
-    global urdf 
+    global urdf
 
     urdf = URDF()
 
@@ -239,10 +256,11 @@ def Start_URDF(filename):
 
     links = []
 
-def Start_Model(modelName,pos):
 
-    global model 
+def Start_Model(modelName, pos):
 
-    model = MODEL(modelName,pos)
+    global model
+
+    model = MODEL(modelName, pos)
 
     model.Save_Start_Tag(f)
