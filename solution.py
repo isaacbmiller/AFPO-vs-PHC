@@ -120,14 +120,11 @@ class SOLUTION():
         return
 
     def Mutate(self):
-        # Pick a random layer to mutate
-        randomLayer = np.random.randint(0, len(self.layerSizes) - 1)
-        # Pick a random row to mutate
-        randomRow = np.random.randint(0, self.layerSizes[randomLayer])
-        # Pick a random column to mutate
-        randomColumn = np.random.randint(0, self.layerSizes[randomLayer + 1])
-
-        self.weights[randomLayer][randomRow][randomColumn] = np.random.uniform(-1, 1)
+        for i in range(len(self.layerSizes) - 1):
+            for j in range(self.layerSizes[i]):
+                for k in range(self.layerSizes[i + 1]):
+                    if np.random.random() < c.MUTATION_RATE:
+                        self.weights[i][j][k] = np.random.uniform(-1, 1)
 
     def Set_ID(self, id):
         self.myID = id

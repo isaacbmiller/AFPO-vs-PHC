@@ -46,7 +46,7 @@ class ROBOT:
             if self.nn.Is_Motor_Neuron(neuronName):
                 jointName = self.nn.Get_Motor_Neurons_Joint(neuronName)
                 desiredAngle = self.nn.Get_Value_Of(neuronName)
-                # desiredAngle = desiredAngle * c.MOTOR_JOINT_RANGE
+                desiredAngle = desiredAngle * c.MOTOR_JOINT_RANGE
                 encoded_joint_name = jointName.encode('utf-8')
                 # self.motors[encoded_joint_name].Set_Value(desiredAngle)
                 self.motors[encoded_joint_name].Set_Value(desiredAngle, p.VELOCITY_CONTROL)
@@ -61,7 +61,7 @@ class ROBOT:
         # Calculate the mean time that the torso is above the ground
         
         torsoOffGround = - self.sensors["Torso"].values.mean()
-        fitness += torsoOffGround * 2
+        fitness += torsoOffGround
         # Incentivize the robot to keep the lower legs on the ground but not the upper legs
         lowerLegSensors = ["LowerFrontLeftLeg", "LowerFrontRightLeg", "LowerBackLeftLeg", "LowerBackRightLeg"]
         upperLegSensors = ["FrontLeftLeg", "FrontRightLeg", "BackLeftLeg", "BackRightLeg"]
