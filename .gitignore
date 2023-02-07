@@ -1,2 +1,4 @@
 data/
 fitness*.txt
+*.pyc
+env/

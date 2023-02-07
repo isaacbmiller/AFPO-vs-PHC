@@ -1,3 +1,4 @@
+import numpy as np
 import pybullet as p
 
 from pyrosim.nndf import NNDF
@@ -52,6 +53,11 @@ def Get_Touch_Sensor_Value_For_Link(linkName):
     desiredLinkIndex = linkNamesToIndices[linkName]
 
     pts = p.getContactPoints()
+    if pts is None:
+        print("No contact points found")
+        print("linkName: ", linkName)
+        return touchValue
+        
 
     for pt in pts:
 
@@ -113,7 +119,7 @@ def Prepare_To_Simulate(bodyID):
     Prepare_Joint_Dictionary(bodyID)
 
 
-def Send_Cube(name="default", pos=[0, 0, 0], size=[1, 1, 1]):
+def Send_Cube(name="default", pos=[0, 0, 0], size=[1, 1, 1], materialName="Cyan", color=[0,1.0,1.0,1.0]):
 
     global availableLinkIndex
 
@@ -127,7 +133,35 @@ def Send_Cube(name="default", pos=[0, 0, 0], size=[1, 1, 1]):
 
         links.append(link)
     else:
-        link = LINK_URDF(name, pos, size)
+        link = LINK_URDF(name, pos, size, materialName=materialName, color=color)
+
+        links.append(link)
+
+    link.Save(f)
+
+    if filetype == SDF_FILETYPE:
+
+        End_Model()
+
+    linkNamesToIndices[name] = availableLinkIndex
+
+    availableLinkIndex = availableLinkIndex + 1
+
+def Send_Cylinder(name="default", pos=[0, 0, 0], rpy=[0,0,0], radius=1, length=1, thickness=0.1):
+
+    global availableLinkIndex
+
+    global links
+
+    if filetype == SDF_FILETYPE:
+
+        Start_Model(name, pos)
+        breakpoint()
+        link = LINK_SDF(name, pos, [radius, length, thickness], "cylinder")
+
+        links.append(link)
+    else:
+        link = LINK_URDF(name, pos, [radius, length, thickness], "cylinder", rpy)
 
         links.append(link)
 
@@ -142,7 +176,7 @@ def Send_Cube(name="default", pos=[0, 0, 0], size=[1, 1, 1]):
     availableLinkIndex = availableLinkIndex + 1
 
 
-def Send_Joint(name, parent, child, type, position, jointAxis="0 1 0"):
+def Send_Joint(name, parent, child, type, position, jointAxis="0 1 0", lowerLimit=-np.pi, upperLimit=np.pi):
 
     joint = JOINT(name, parent, child, type, position)
 
@@ -160,6 +194,9 @@ def Send_Sensor_Neuron(name, linkName):
     f.write('    <neuron name = "' + str(name) +
             '" type = "sensor" linkName = "' + linkName + '" />\n')
 
+def Send_Hidden_Neuron(name):
+
+    f.write('    <neuron name = "' + str(name) + '" type = "hidden" />\n')
 
 def Send_Synapse(sourceNeuronName, targetNeuronName, weight):
 
@@ -167,7 +204,7 @@ def Send_Synapse(sourceNeuronName, targetNeuronName, weight):
             '" targetNeuronName = "' + str(targetNeuronName) + '" weight = "' + str(weight) + '" />\n')
 
 
-def Set_Motor_For_Joint(bodyIndex, jointName, controlMode, targetPosition, maxForce):
+def Set_Motor_For_Joint(bodyIndex, jointName, controlMode, targetPosition=0, maxForce=0, targetVelocity=0, positionGain=0.03, velocityGain=1):
 
     p.setJointMotorControl2(
 
@@ -179,7 +216,14 @@ def Set_Motor_For_Joint(bodyIndex, jointName, controlMode, targetPosition, maxFo
 
         targetPosition=targetPosition,
 
-        force=maxForce)
+        targetVelocity=targetVelocity,
+
+        force=maxForce,
+        
+        positionGain=positionGain,
+
+        velocityGain=velocityGain
+        )
 
 
 def Start_NeuralNetwork(filename):

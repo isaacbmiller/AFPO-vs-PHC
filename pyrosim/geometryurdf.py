@@ -2,7 +2,7 @@ from pyrosim.commonFunctions import Save_Whitespace
 
 class GEOMETRY_URDF: 
 
-    def __init__(self,size):
+    def __init__(self,size, shape="box"):
 
         self.depth   = 3
 
@@ -10,7 +10,10 @@ class GEOMETRY_URDF:
 
         sizeString = str(size[0]) + " " + str(size[1]) + " " + str(size[2])
 
-        self.string2 = '    <box size="' + sizeString + '" />'
+        if shape == "box":
+            self.string2 = f'    <{shape} size="' + sizeString + '" />'
+        elif shape == "cylinder":
+            self.string2 = f'    <{shape} radius="' + str(size[0]) + '" length="' + str(size[1]) + '" />'
 
         self.string3 = '</geometry>'
 
