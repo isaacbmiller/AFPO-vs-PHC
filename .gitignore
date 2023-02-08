@@ -3,3 +3,6 @@ fitness*.txt
 *.pyc
 env/
 1
+brain*.nndf
+robot*.urdf
+fitness*.txt

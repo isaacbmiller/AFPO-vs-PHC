@@ -39,6 +39,9 @@ class JOINT:
         f.write('   <origin rpy="0 0 0" xyz="' + originString + '" />\n')
 
         Save_Whitespace(self.depth, f)
+        if type(jointAxis) == list:
+            jointAxis = str(jointAxis[0]) + " " + \
+                str(jointAxis[1]) + " " + str(jointAxis[2])
         f.write('   <axis xyz="' + jointAxis + '"/>\n')
 
         Save_Whitespace(self.depth, f)

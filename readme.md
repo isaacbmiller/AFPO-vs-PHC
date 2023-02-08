@@ -1,6 +1,13 @@
-# Isaac Miller - Assignment 5
+# Isaac Miller 
+## Assignment 6
 
-## Overview
+### Overview
+
+
+
+## Assignment 5
+
+### Overview
 
 What I decided to do with this project was to do the following objectives taken from the Ludobots reddit:
 1. Sit. Good dog.
@@ -18,7 +25,7 @@ From my testing, having the neural network does not make much if any of a perfor
 
 I did implement a custom mutator that scales with the number of weights in the neural network which helps to solve the issue of dilution. There is now a constant in the constants file called 'MUTATION_RATE' which is the probability that a weight will be mutated. This is multiplied by the number of weights in the neural network, so that the more weights there are, the more likely a weight will be mutated. This helps to solve the issue of dilution, but it does not solve the issue of the robot not learning from its mistakes.
 
-## Run Button
+### Run Button
 
 To run the code, you can clone the repo, switch to the 'final-project' branch, and run the following command:
 ```
@@ -27,7 +34,7 @@ python3 search.py
 
 This will run the search algorithm and output the best robot it finds to the console along with show a visualization of the robot.
 
-## Video
+### Video
 
 Here is the gif of the robot evolving:
 
