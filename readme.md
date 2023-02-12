@@ -20,12 +20,10 @@ The snakes seen in this experiment have the following qualities:
 6. The fitness function is the average distance from the center of the screen of the head of the snake in the +x and +y direction.
 
 
+### Tasks:
 - [x] random number
-
 - [x] randomly shaped links
-
 - [X] random sensor placement along the chain.
-
 - [x] Links with and without sensors should be colored green and blue, respectively.
 
 ## Video
