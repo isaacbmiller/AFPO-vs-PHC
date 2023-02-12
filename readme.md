@@ -30,6 +30,7 @@ The snakes seen in this experiment have the following qualities:
 
 ## Video
 
+This video contains 5 random unevolved snakes, and then 5 evolved snakes after 50 generations.
 [Youtube Link](https://youtu.be/DQLIAmM41Ck)
 
 ## Assignment 5
