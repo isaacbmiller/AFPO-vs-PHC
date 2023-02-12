@@ -60,18 +60,18 @@ class ROBOT:
         fitness = 0
         # Calculate the mean time that the torso is above the ground
         
-        torsoOffGround = - self.sensors["Torso"].values.mean()
-        fitness += torsoOffGround
+        # torsoOffGround = - self.sensors["Torso"].values.mean()
+        # fitness += torsoOffGround
         # Incentivize the robot to keep the lower legs on the ground but not the upper legs
-        lowerLegSensors = ["LowerFrontLeftLeg", "LowerFrontRightLeg", "LowerBackLeftLeg", "LowerBackRightLeg"]
-        upperLegSensors = ["FrontLeftLeg", "FrontRightLeg", "BackLeftLeg", "BackRightLeg"]
-        legIncentive = 0
-        for sensor in lowerLegSensors:
-            legIncentive += self.sensors[sensor].values.mean()
-        for sensor in upperLegSensors:
-            legIncentive -= self.sensors[sensor].values.mean()
-        legIncentive = legIncentive / 4
-        fitness += legIncentive
+        # lowerLegSensors = ["LowerFrontLeftLeg", "LowerFrontRightLeg", "LowerBackLeftLeg", "LowerBackRightLeg"]
+        # upperLegSensors = ["FrontLeftLeg", "FrontRightLeg", "BackLeftLeg", "BackRightLeg"]
+        # legIncentive = 0
+        # for sensor in lowerLegSensors:
+        #     legIncentive += self.sensors[sensor].values.mean()
+        # for sensor in upperLegSensors:
+        #     legIncentive -= self.sensors[sensor].values.mean()
+        # legIncentive = legIncentive / 4
+        # fitness += legIncentive
 
         
         # Make distance from the origin in the +x -y direction a fitness function

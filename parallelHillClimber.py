@@ -35,7 +35,7 @@ class PARALLEL_HILL_CLIMBER():
         self.Mutate()
         self.Evaluate(self.children)
         # self.Print()
-        self.Print_Best(currentGeneration)
+        self.Print_Status(currentGeneration)
         
         self.Select()
 
@@ -43,7 +43,7 @@ class PARALLEL_HILL_CLIMBER():
         for solution in solutions.values():
             solution.Start_Simulation("DIRECT")
         for solution in solutions.values():
-            solution.Wait_For_Simulation_To_End()
+            solution.Wait_For_Simulation_To_End("DIRECT")
 
     def Spawn(self):
         self.children = {}
@@ -65,14 +65,18 @@ class PARALLEL_HILL_CLIMBER():
         for key in self.parents.keys():
             print("\nParent Fitness: ", str(self.parents[key].fitness),
                   " Child Fitness: ", str(self.children[key].fitness) + "\n")
-    def Print_Best(self, currentGeneration):
+    def Print_Status(self, currentGeneration):
         bestFitness = -1000
         self.bestParent = list(self.parents.values())[0]
         for key in self.parents.keys():
             if self.parents[key].fitness > bestFitness:
                 self.bestParent = self.parents[key]
                 bestFitness = self.parents[key].fitness
-        print("Generation: ", currentGeneration, " Best Fitness: ", bestFitness)
+        averageFitness = 0
+        for key in self.parents.keys():
+            averageFitness += self.parents[key].fitness
+        averageFitness /= len(self.parents)
+        print("Generation: ", currentGeneration, " Best Fitness: ", bestFitness, " Average Fitness: ", averageFitness)
 
     def Show_Best(self):
         # print("\nShowing Best\n")
@@ -86,10 +90,16 @@ class PARALLEL_HILL_CLIMBER():
         self.bestParent.Start_Simulation("GUI")
         print("\nBest Parent Fitness: ", str(self.bestParent.fitness) + "\n")
 
-    def Show_Random(self):
-        randomParent = np.random.choice(list(self.parents.values()))
-        randomParent.Start_Simulation("GUI")
-        randomParent.Wait_For_Simulation_To_End()
+    def Show_Random(self, num=5, text=None):
+        if len(self.parents) < num:
+            num = len(self.parents)
+
+        # Choose num unique random parents
+        randomParents = np.random.choice(list(self.parents.values()), num, replace=False) 
+        
+        for randomParent in randomParents:
+            randomParent.Start_Simulation("GUI", text)
+            randomParent.Wait_For_Simulation_To_End("GUI")
     
     def Save_Best_Sensor_Data(self):
         bestFitness = -1000
