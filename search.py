@@ -2,7 +2,8 @@ import os
 from parallelHillClimber import PARALLEL_HILL_CLIMBER
 
 phc = PARALLEL_HILL_CLIMBER()
-phc.Show_Random(num=5, text="Unevolved")
+phc.Show_Random(num=10, text="Unevolved")
+exit()
 phc.Evolve()
 # phc.Evolve_For_One_Generation()
 # phc.Save_Best_Sensor_Data()

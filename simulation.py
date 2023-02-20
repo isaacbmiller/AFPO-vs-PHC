@@ -8,7 +8,7 @@ import pyrosim.pyrosim as pyrosim
 import constants as c
 
 # Calculate how long the sim should sleep given c.GUI_SIM_LENGTH_SECONDS and c.SIM_LENGTH
-SLEEP_LENGTH = (c.GUI_SIM_LENGTH_SECONDS / c.SIM_LENGTH) / 10000
+SLEEP_LENGTH = (c.GUI_SIM_LENGTH_SECONDS / c.SIM_LENGTH)
 class SIMULATION:
     def __init__(self, directOrGUI, solutionID, text=None):
         self.directOrGUI = directOrGUI
@@ -17,6 +17,7 @@ class SIMULATION:
             self.physicsClient = p.connect(p.GUI)
         else:
             self.physicsClient = p.connect(p.DIRECT)
+        p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         p.setGravity(0, 0, -9.8)
         self.text = text
