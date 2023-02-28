@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import numpy as np
 from solution import SOLUTION
 import constants as c
@@ -78,17 +78,43 @@ class PARALLEL_HILL_CLIMBER():
         averageFitness /= len(self.parents)
         print("Generation: ", currentGeneration, " Best Fitness: ", bestFitness, " Average Fitness: ", averageFitness)
 
-    def Show_Best(self):
+    def Show_Best(self, num=1):
         # print("\nShowing Best\n")
         # self.Evaluate(self.parents)
-        bestFitness = -1000
-        self.bestParent = list(self.parents.values())[0]
+        # bestFitness = -1000
+        # self.bestParent = list(self.parents.values())[0]
+        # for key in self.parents.keys():
+        #     if self.parents[key].fitness > bestFitness:
+        #         self.bestParent = self.parents[key]
+        #         bestFitness = self.parents[key].fitness
+        # Get the top num parents
+        topParents = sorted(self.parents.values(), key=lambda x: x.fitness, reverse=True)[:num]
+        for parent in topParents:
+            parent.Start_Simulation("GUI")
+            parent.Wait_For_Simulation_To_End("GUI")
+            print("\nBest Parent Fitness: ", str(parent.fitness) + "\n")
+
+    def Get_Random_Parent(self):
+        randomParent = np.random.choice(list(self.parents.values()))
+        return randomParent.myID
+    
+    def Show_By_ID(self, idToTrack):
+        hasShown = False
         for key in self.parents.keys():
-            if self.parents[key].fitness > bestFitness:
-                self.bestParent = self.parents[key]
-                bestFitness = self.parents[key].fitness
-        self.bestParent.Start_Simulation("GUI")
-        print("\nBest Parent Fitness: ", str(self.bestParent.fitness) + "\n")
+            if self.parents[key].myID == idToTrack:
+                self.parents[key].Start_Simulation("GUI")
+                self.parents[key].Wait_For_Simulation_To_End("GUI")
+                hasShown = True
+                # print("\nTracked Parent Fitness: ", str(self.parents[key].fitness) + "\n")
+        if not hasShown:
+            for key in self.children.keys():
+                if self.children[key].myID == idToTrack:
+                    self.children[key].Start_Simulation("GUI")
+                    self.children[key].Wait_For_Simulation_To_End("GUI")
+                    hasShown = True
+                    # print("\nTracked Child Fitness: ", str(self.children[key].fitness) + "\n")
+        if not hasShown:
+            print("\nID not found\n")
 
     def Show_Random(self, num=5, text=None):
         if len(self.parents) < num:
@@ -119,12 +145,12 @@ class PARALLEL_HILL_CLIMBER():
                 self.bestFitnesses[currentGeneration] = self.parents[key].fitness
         self.allFitnesses[:, currentGeneration] = [self.parents[key].fitness for key in self.parents.keys()]
         self.averageFitnesses[currentGeneration] /= c.POPULATION_SIZE
-        # self.Save_Fitness_To_Disk()
         
     def Save_Fitness_To_Disk(self):
-        # Save it in a file named fitness-currentDate-currentTime.
-        np.save(f"data/averageFitnesses{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.npy", self.averageFitnesses)
-        np.save(f"data/bestFitnesses{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.npy", self.bestFitnesses)
+        # Save average and best fitnesses to separate files with a timestamp
+        timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+        np.save(f"data/averageFitnesses-{timestamp}.npy", self.averageFitnesses)
+        np.save(f"data/bestFitnesses-{timestamp}.npy", self.bestFitnesses)
 
     def Show_Fitness_Graph(self):
         plt.plot(self.averageFitnesses)

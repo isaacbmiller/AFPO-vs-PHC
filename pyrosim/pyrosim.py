@@ -49,14 +49,27 @@ def End_Model():
 def Get_Touch_Sensor_Value_For_Link(linkName):
 
     touchValue = -1.0
+    if linkName not in linkNamesToIndices:
+        # Write this into a log file
+        with open("log.txt", "a") as logFile:
+            # Write the curent body ID from the pyrosim module
+            bID = p.getBodyUniqueId(0)
 
+            logFile.write("\n\nNew error: \n")
+            logFile.write("Body ID: " + str(bID))
+            logFile.write("Link name not found: " + linkName)
+            logFile.write("\nAll link names and their indices: \n")
+            for linkName in linkNamesToIndices.keys():
+                logFile.write(str(linkName) + ": " + str(linkNamesToIndices[linkName]) + "\n")
+            logFile.write("\n")
+                          
+
+    
     desiredLinkIndex = linkNamesToIndices[linkName]
 
-    pts = p.getContactPoints()
-    if pts is None:
-        print("No contact points found")
-        print("linkName: ", linkName)
-        return touchValue
+    pts = None
+    while pts is None:
+     pts = p.getContactPoints()
         
 
     for pt in pts:
