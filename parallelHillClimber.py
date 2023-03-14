@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 class PARALLEL_HILL_CLIMBER():
 
-    def __init__(self):
+    def __init__(self, runName=None, selectionMethod="parallel-hill-climber"):
         os.system("rm brain*.nndf")
         os.system("rm fitness*.txt")
         self.parents = {}
@@ -20,6 +20,11 @@ class PARALLEL_HILL_CLIMBER():
         self.averageFitnesses = np.zeros(c.NUM_GENERATIONS)
         self.bestFitnesses = np.zeros(c.NUM_GENERATIONS)
         self.allFitnesses = np.zeros((c.POPULATION_SIZE, c.NUM_GENERATIONS))
+        if runName is None:
+            self.runName = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        else:
+            self.runName = runName
+        self.currentGeneration = 0
 
 
     def Evolve(self):
@@ -27,6 +32,9 @@ class PARALLEL_HILL_CLIMBER():
         self.Evaluate(self.parents)
         print("Evaluated Parents")
         for currentGeneration in range(c.NUM_GENERATIONS):
+            self.currentGeneration = currentGeneration
+            if currentGeneration % 50 == 0:
+                self.Save_Robots_To_Disk()
             self.Evolve_For_One_Generation(currentGeneration)
             self.Save_Current_Fitnesses(currentGeneration)
 
@@ -79,14 +87,6 @@ class PARALLEL_HILL_CLIMBER():
         print("Generation: ", currentGeneration, " Best Fitness: ", bestFitness, " Average Fitness: ", averageFitness)
 
     def Show_Best(self, num=1):
-        # print("\nShowing Best\n")
-        # self.Evaluate(self.parents)
-        # bestFitness = -1000
-        # self.bestParent = list(self.parents.values())[0]
-        # for key in self.parents.keys():
-        #     if self.parents[key].fitness > bestFitness:
-        #         self.bestParent = self.parents[key]
-        #         bestFitness = self.parents[key].fitness
         # Get the top num parents
         topParents = sorted(self.parents.values(), key=lambda x: x.fitness, reverse=True)[:num]
         for parent in topParents:
@@ -148,9 +148,13 @@ class PARALLEL_HILL_CLIMBER():
         
     def Save_Fitness_To_Disk(self):
         # Save average and best fitnesses to separate files with a timestamp
-        timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        np.save(f"data/averageFitnesses-{timestamp}.npy", self.averageFitnesses)
-        np.save(f"data/bestFitnesses-{timestamp}.npy", self.bestFitnesses)
+        np.save(f"data/{self.runName}/averageFitnesses.npy", self.averageFitnesses)
+        np.save(f"data/{self.runName}/bestFitnesses.npy", self.bestFitnesses)
+
+    def Save_Robots_To_Disk(self):
+        # Save all robots to disk
+        for key in self.parents.keys():
+            self.parents[key].Save_To_Disk(self.runName, self.currentGeneration)
 
     def Show_Fitness_Graph(self):
         plt.plot(self.averageFitnesses)

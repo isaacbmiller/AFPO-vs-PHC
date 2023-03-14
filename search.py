@@ -1,22 +1,26 @@
 import os
+import sys
 from parallelHillClimber import PARALLEL_HILL_CLIMBER
 import numpy as np
-np.random.seed(5)
 
-phc = PARALLEL_HILL_CLIMBER()
-phc.Show_Random(num=10, text="Unevolved")
-# idToTrack = phc.Get_Random_Parent()
+# Check if seed is in args
+if len(sys.argv) > 1:
+    np.random.seed(int(sys.argv[1]))
+    name = str(sys.argv[2]) + str(sys.argv[1])
+    selectionMethod = str(sys.argv[3])
+else:
+    np.random.seed(0)
+    name = None
+    selectionMethod = "parallel-hill-climber"
 
-# idToTrack = phc.parents.keys()
-# phc.Show_By_ID(idToTrack)
-# phc.parents[idToTrack].Mutate()
+phc = PARALLEL_HILL_CLIMBER(name, selectionMethod)
+# phc.Show_Random(num=10, text="Unevolved")
+
 phc.Evolve()
-# phc.Show_By_ID(idToTrack)
 
-phc.Show_Best(num=10)
-# phc.Show_Random(num=4, text="Evolved")
-# phc.Show_By_ID(idToTrack)
+# phc.Show_Best(num=10)
 
-phc.Show_Fitness_Graph()
+phc.Save_Robots_To_Disk()
 phc.Save_Fitness_To_Disk()
+# phc.Show_Fitness_Graph()
 os.system("rm fitness*.txt")

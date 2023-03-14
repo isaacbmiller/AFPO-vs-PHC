@@ -55,7 +55,9 @@ The example only shows one dimension being changed, but all more than 1 dimensio
 
 Every neuron in the neural network has a configurable X%, (default 10%), chance of having the weight changed. The weight can be changed to any random amount between -1 and 1.
 
-
+---
+# Old Assignments
+Everything past this point is an archive to view the development progression of the project.
 ---
 ## Assignment 8
 

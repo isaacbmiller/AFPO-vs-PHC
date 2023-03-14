@@ -1,3 +1,5 @@
+import pickle
+import shutil
 import time
 import numpy as np
 import pyrosim.pyrosim as pyrosim
@@ -402,3 +404,29 @@ class SOLUTION():
 
     def Save_Sensor_Data(self):
         self.Start_Simulation("DIRECT", True)
+
+    def Save_To_Disk(self, runName, currentGeneration):
+        baseFolder = "./data/" + runName + "/solutions/"
+        if not os.path.exists(baseFolder):
+            os.makedirs(baseFolder)
+        folder = baseFolder + str(currentGeneration) + "/"
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+        # Pickle the current solution object
+        with open(folder + "solution" + str(self.myID) + ".pkl", "wb") as f:
+            pickle.dump(self, f)
+            f.close()
+            
+
+    def Save_Robot_Body(self, fileName):
+        self.Create_Robot()
+        # Copy the file into the folder
+        shutil.copyfile("./robot" + str(self.myID) + ".urdf", fileName)
+
+    def Save_Brain(self, fileName):
+        self.Create_Brain()
+        # Copy the file into the folder
+        shutil.copyfile("./brain" + str(self.myID) + ".nndf", fileName)
+
+
