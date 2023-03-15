@@ -13,27 +13,24 @@ import sys
 import time
 import datetime
 
-
-for i in range(1,5):
-    print("Starting run " + str(i))
-    runName = "parallelHC-run-test"
+# This file will create an exact replica of the data used for hill-climbing and afpo
+for i in range(0,5):
+    print("Starting Parallel HC run " + str(i))
+    runName = "parallelHC-run-test-250-"
     os.system("python search.py " + str(i) + " " + runName + " parallel-hill-climber")
     while True:
         if os.path.exists("data/" + runName + str(i) + "/averageFitnesses.npy"):
             break
         time.sleep(10)
 
-# Get the data from the files
-data = []
-for i in range(5):
-    with open("data/run" + str(i) + "/averageFitnesses.npy", "rb") as f:
-        data.append(np.load(f))
+for i in range(0,5):
+    print("Starting AFPO run " + str(i))
+    runName = "AFPO-run-test-temp-250-"
+    os.system("python search.py " + str(i) + " " + runName + " age-fitness-pareto-optimal")
+    while True:
+        if os.path.exists("data/" + runName + str(i) + "/averageFitnesses.npy"):
+            break
+        time.sleep(10)
 
-# Graph the data
-# plt.plot(data[0], label="run0")
-# plt.plot(data[1], label="run1")
-# plt.plot(data[2], label="run2")
-# plt.plot(data[3], label="run3")
-# plt.plot(data[4], label="run4")
-# plt.legend()
-# plt.show()
+
+

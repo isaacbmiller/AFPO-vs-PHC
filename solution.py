@@ -99,6 +99,8 @@ class SOLUTION():
         for i in range(0, self.numLinks):
             if self.sensorLocations[i] == 1:
                 self.sensorNames.append(self.linkNames[i])
+
+        self.lineage = []
     
     def Create_Robot(self):
         pyrosim.Start_URDF("robot" + str(self.myID) + ".urdf")
@@ -187,6 +189,8 @@ class SOLUTION():
             if time_spent > 3 and method == "DIRECT":
                 print("Simulation " + str(self.myID) + " timed out")
                 self.fitness = 0
+                # Broken robot
+                self.Save_To_Disk("brokenRobot", 0)
                 return
             if time_spent > 10 and method == "GUI":
                 print("Simulation " + str(self.myID) + " timed out")

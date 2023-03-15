@@ -11,9 +11,9 @@ if len(sys.argv) > 1:
 else:
     np.random.seed(0)
     name = None
-    selectionMethod = "parallel-hill-climber"
+    selectionMethod="parallel-hill-climber"
 
-phc = PARALLEL_HILL_CLIMBER(name, selectionMethod)
+phc = PARALLEL_HILL_CLIMBER(name, selectionMethod=selectionMethod)
 # phc.Show_Random(num=10, text="Unevolved")
 
 phc.Evolve()

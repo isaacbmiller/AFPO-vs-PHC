@@ -1,4 +1,5 @@
 import datetime
+from datetime import datetime
 import random
 import numpy as np
 from solution import SOLUTION
@@ -25,6 +26,7 @@ class PARALLEL_HILL_CLIMBER():
             self.runName = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         else:
             self.runName = runName
+        self.selectionMethod = selectionMethod
         self.currentGeneration = 0
 
 
@@ -36,24 +38,40 @@ class PARALLEL_HILL_CLIMBER():
             self.currentGeneration = currentGeneration
             if currentGeneration % 50 == 0:
                 self.Save_Robots_To_Disk()
-            self.Evolve_For_One_Generation(currentGeneration)
-            self.Save_Current_Fitnesses(currentGeneration)
+            if self.selectionMethod == "parallel-hill-climber":
+                self.Evolve_For_One_Generation_PHC(currentGeneration)
+                self.Save_Current_Fitnesses(currentGeneration)
+            elif self.selectionMethod == "age-fitness-pareto-optimal":
+                self.Evolve_For_One_Generation_AFPO(currentGeneration)
+            
 
-    def Evolve_For_One_Generation(self, currentGeneration):
+    def Evolve_For_One_Generation_PHC(self, currentGeneration):
+        self.Spawn()
+        self.Mutate()
+        self.Evaluate(self.children)
+        # self.Print()
+        self.Print_Status(currentGeneration)
+        
+        self.Select()
+        
+    def Evolve_For_One_Generation_AFPO(self, currentGeneration):
         self.Spawn()
         # self.parents is a dictionary of solutions where solutions has a fitness
         # EDIT HERE
         self.Evaluate(self.parents)
+        self.Print_Status(currentGeneration)
+        self.Save_Current_Fitnesses(currentGeneration)
 
         population = list(self.parents.values())
-        non_domination_levels = self.non_dominated_sorting(population)
-        non_domination_levels = self.crowding_distance(non_domination_levels)
-        new_generation = self.create_next_generation(population=population, non_domination_levels=non_domination_levels)
+        non_domination_levels = self.Non_Dominated_Sorting(population)
+        non_domination_levels = self.Crowding_Distance(non_domination_levels)
+        new_generation = self.Create_Next_Generation(population=population, non_domination_levels=non_domination_levels)
 
         # For all of the parents that survived, keep them in the parents dictionary
         # Remove all of the parents that did not survive
         # Add the new children to the parents dictionary
         # Age all of the parents
+        parentIDs = [x.myID for x in self.parents.values()]
         parentsToDel = []
         for parent in self.parents:
             if parent not in new_generation:
@@ -63,20 +81,19 @@ class PARALLEL_HILL_CLIMBER():
 
         for parent in self.parents:
             self.parents[parent].age += 1
+
         for child in new_generation:
-            if child not in self.parents:
+            if child not in parentIDs:
                 self.parents[child.myID] = child
             
 
         # self.Mutate()
         
         # self.Print()
-        self.Print_Status(currentGeneration)
-        self.Print_Status(currentGeneration)
         
         # self.Select()
 
-    def non_dominated_sorting(self, population):
+    def Non_Dominated_Sorting(self, population):
         population_size = len(population)
         non_domination_level = []
         for i in range(population_size):
@@ -88,13 +105,13 @@ class PARALLEL_HILL_CLIMBER():
                     dominated_individuals.append(j)
                 elif population[j].fitness <= population[i].fitness and population[j].age <= population[i].age:
                     break
-            if not dominated_individuals:
+            if not dominated_individuals and not any(population[j] in level for level in non_domination_level):
                 non_domination_level.append([population[i]])
         if not non_domination_level:
             non_domination_level.append(population)
         return non_domination_level
 
-    def crowding_distance(self, non_domination_levels):
+    def Crowding_Distance(self, non_domination_levels, fitness_weight=0.7, age_weight=0.3):
         for level in non_domination_levels:
             n = len(level)
             if n == 0:
@@ -106,34 +123,32 @@ class PARALLEL_HILL_CLIMBER():
                 level[0].crowding_distance = np.inf
                 level[1].crowding_distance = np.inf
                 continue
-            
+
             fitness_values = np.array([individual.fitness for individual in level])
             age_values = np.array([individual.age for individual in level])
-            
+
             fitness_min, fitness_max = np.min(fitness_values), np.max(fitness_values)
             age_min, age_max = np.min(age_values), np.max(age_values)
-            
+
             for i in range(n):
                 level[i].crowding_distance = 0
-                
+
             sort_index = np.argsort(fitness_values)
             level[sort_index[0]].crowding_distance = np.inf
             level[sort_index[n - 1]].crowding_distance = np.inf
-            
+
             for i in range(1, n-1):
-                level[sort_index[i]].crowding_distance += (fitness_values[sort_index[i + 1]] - fitness_values[sort_index[i - 1]]) / (fitness_max - fitness_min)
-                
+                level[sort_index[i]].crowding_distance += fitness_weight * (fitness_values[sort_index[i + 1]] - fitness_values[sort_index[i - 1]]) / (fitness_max - fitness_min)
+
             sort_index = np.argsort(age_values)
             level[sort_index[0]].crowding_distance = np.inf
             level[sort_index[n - 1]].crowding_distance = np.inf
-            
-            for i in range(1, n-1):
-                level[sort_index[i]].crowding_distance += (age_values[sort_index[i + 1]] - age_values[sort_index[i - 1]]) / (age_max - age_min)
-                
-        return non_domination_levels
-    
 
-    def select_next_generation(self, non_domination_levels):
+            for i in range(1, n-1):
+                level[sort_index[i]].crowding_distance += age_weight * (age_values[sort_index[i + 1]] - age_values[sort_index[i - 1]]) / (age_max - age_min)
+        return non_domination_levels
+
+    def Select_Next_Generation(self, non_domination_levels):
         next_generation = []
         for level in non_domination_levels:
             if len(level) <= 2:
@@ -145,13 +160,15 @@ class PARALLEL_HILL_CLIMBER():
 
         return next_generation
     
-    def create_next_generation(self, population, non_domination_levels):
-        selected_population = self.select_next_generation(non_domination_levels)
-        next_generation = selected_population.copy()
+    def Create_Next_Generation(self, population, non_domination_levels):
+        selected_population = self.Select_Next_Generation(non_domination_levels)
+        next_generation = copy.deepcopy(selected_population)
         while len(next_generation) < len(population):
             individual = random.choice(selected_population)
             new_individual = copy.deepcopy(individual)
+            individualID = individual.myID
             new_individual.myID = self.nextAvailableID
+            new_individual.lineage.append([self.currentGeneration, individualID])
             self.nextAvailableID += 1
             new_individual.age = 0
             new_individual.Mutate()
@@ -162,7 +179,6 @@ class PARALLEL_HILL_CLIMBER():
         for solution in solutions.values():
             solution.Start_Simulation("DIRECT")
         for solution in solutions.values():
-            solution.Wait_For_Simulation_To_End("DIRECT")
             solution.Wait_For_Simulation_To_End("DIRECT")
 
     def Spawn(self):
@@ -197,18 +213,8 @@ class PARALLEL_HILL_CLIMBER():
         for key in self.parents.keys():
             averageFitness += self.parents[key].fitness
         averageFitness /= len(self.parents)
+        
         print("Generation: ", currentGeneration, " Best Fitness: ", bestFitness, " Average Fitness: ", averageFitness)
-
-    def Show_Best(self):
-        # print("\nShowing Best\n")
-        # self.Evaluate(self.parents)
-        bestFitness = -1000
-        self.bestParent = list(self.parents.values())[0]
-        averageFitness = 0
-        for key in self.parents.keys():
-            averageFitness += self.parents[key].fitness
-        averageFitness /= len(self.parents)
-        print("Generation: ", self.currentGeneration, " Best Fitness: ", bestFitness, " Average Fitness: ", averageFitness)
 
     def Show_Best(self, num=1):
         # Get the top num parents

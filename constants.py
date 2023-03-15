@@ -8,8 +8,8 @@ AMPLITUDE = PI / 8
 FREQUENCY = 10
 PHASE_OFFSET = 0
 
-NUM_GENERATIONS = 501
-POPULATION_SIZE = 10
+NUM_GENERATIONS = 250
+POPULATION_SIZE = 20
 SELECTION_SIZE = math.floor(POPULATION_SIZE / 2)
 
 NUM_SENSORS = 9
@@ -25,3 +25,6 @@ MUTATION_RATE = 0.1
 GUI_SIM_LENGTH_SECONDS = 1
 WEIGHT_AGE = 0.2
 WEIGHT_FITNESS = 1 - WEIGHT_AGE
+
+# SELECTION_METHOD = 'parallel-hill-climber'  # 'parallel-hill-climber' or 'age-fitness-pareto-optimal'
+SELECTION_METHOD = 'age-fitness-pareto-optimal'  # 'parallel-hill-climber' or 'age-fitness-pareto-optimal'
