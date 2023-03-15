@@ -14,6 +14,9 @@
       - [Body Generation](#body-generation)
       - [Brain Generation](#brain-generation)
     - [Evolution](#evolution)
+    - [Selection Algorithms](#selection-algorithms)
+      - [Parallel Hill Climber](#parallel-hill-climber)
+      - [Age Fitness Pareto](#age-fitness-pareto)
     - [Simulation Parameters](#simulation-parameters)
 
   - [Results](#results)
@@ -153,6 +156,30 @@ The example only shows one dimension being changed, but all more than 1 dimensio
 #### 4. Change a neuron at random
 
 Every neuron in the neural network has a configurable X%, (default 10%), chance of having the weight changed. The weight can be changed to any random amount between -1 and 1.
+
+### Selection Algorithm
+
+The selection algorithm is used to determine which robots will be used to create the next generation. The main goal of this final project is testing two different selection algorithms.
+
+#### 1. Hill Climbing
+
+The hill climbing algorithm is a simple selection algorithm that is used to find a good solution to a problem.
+
+It starts with a random population of N robots, and all N of those robots will be present in the final generation of the simulation. The only difference is that they can invidivually be mutated. They do not interact with each other at all, and you could run two runs of 10 generations each and get two completely different final populations, but that would be equivalent to running one run of 20 generations.
+
+#### 2. AFPO
+
+AFPO is a Pareto Optimization technique applied to find multiple good solutions for a problem. It generates two fronts, known as the Pareto Front and the Non-Pareto Front. The Pareto Front represents the best solutions for the problem, considering both fitness and age.
+
+The algorithm sorts robots into levels depending on how many times they are dominated. The first level is the Pareto Front, where no robot dominates any other robot.
+
+AFPO works by evaluating robots based on their fitness and age. Fitness shows how well a robot solves a problem, while age represents the number of generations since the robot's creation. Combining fitness and age helps maintain diversity in the population and pushes for better solutions.
+
+The Pareto Front includes non-dominated robots, meaning no other robot in the population outperforms them in both fitness and age. In contrast, the Non-Pareto Front contains robots dominated by at least one robot from the Pareto Front.
+
+By organizing the population into different levels, AFPO can select robots for reproduction and mutation based on their Pareto rank. This approach keeps diverse solutions alive and drives the population towards improved overall performance.
+
+TLDR: AFPO is a multi-objective optimization method that takes both fitness and age into account to discover a variety of high-quality solutions. It classifies the population into levels based on domination, with the Pareto Front holding the non-dominated solutions.
 
 ### Simulation Parameters
 
