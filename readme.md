@@ -62,7 +62,11 @@ You can also run analyze.py to get the average fitness of the robots from each r
 
 ## Youtube Video
 
-<video src="./images/396 Final 2 min.mp4" controls="controls" style="max-width: 730px;"></video>
+[Youtube Link](https://youtu.be/dBV3osA9gCU)
+
+Embed:
+
+<video src="./images/396 Final 2 min.mp4" controls="controls" style="max-width: 730px;" alt="https://youtu.be/dBV3osA9gCU"></video>
 
 ---
 
